@@ -20,11 +20,13 @@ namespace SalesWeb.Controllers
 
         public IActionResult Index()
         {
+            ViewData["message"] = "Sales Web Aplication";
             return View();
         }
 
         public IActionResult Privacy()
         {
+            ViewData["message"] = "New page cSharp web";
             return View();
         }
 
