@@ -34,14 +34,19 @@ namespace SalesWeb
             services.AddDbContextPool<SalesWebContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
 
             services.AddControllers();
+
+            //registra seeding service na injecao de dependecia do sistema.
+            services.AddScoped<SeedingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SeedingService seedingService)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                //Envia meus seeds para database 
+                seedingService.Seed();
             }
             else
             {
