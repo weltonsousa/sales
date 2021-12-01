@@ -2,11 +2,10 @@
 using SalesWeb.Models;
 using SalesWeb.Models.ViewModels;
 using SalesWeb.Services;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SalesWeb.Services.Exception;
+using System.Diagnostics;
+using System;
 
 namespace SalesWeb.Controllers
 {
@@ -49,14 +48,16 @@ namespace SalesWeb.Controllers
         {
             if(id == null)
             {
-                return NotFound();
+
+                //objeto anonimo  new { message = ("Id mismatch") })
+                return RedirectToAction(nameof(Error), new { message = ("Id not provided") });
             }
             
             var obj = _sellerService.FindById(id.Value);
 
             if(obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = ("Id not found") });
             }
 
             return View(obj);
@@ -75,14 +76,14 @@ namespace SalesWeb.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);
 
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -92,14 +93,14 @@ namespace SalesWeb.Controllers
         {
             if(id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);
 
             if(obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found"}) ;
             }
 
             List<Department> departments = _departmentService.FindAll();
@@ -114,7 +115,7 @@ namespace SalesWeb.Controllers
         {
            if(id != seller.Id)
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Id not mismatch"});
             }
             try
             {
@@ -122,15 +123,35 @@ namespace SalesWeb.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch (NotFoundException)
+            // a claase applicationexception traz as excessoes (generica) para as duas excessoes
+            catch (ApplicationException e)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new {e.Message});
             }
-            catch(DbConcurrencyException){
 
-                return BadRequest();
+            //catch (NotFoundException e)
+            //{
+            //    return RedirectToAction(nameof(Error), new {e.Message});
+            //}
+            //catch(DbConcurrencyException e){
+
+            //    return RedirectToAction(nameof(Error), new { e.Message });
+            //}                   
+
             }
-           
+
+            public IActionResult Error(string message)
+            {
+                var viewModel = new ErrorViewModel
+                {
+                    Message = message,
+
+                    //pega o id interno da requisicao (?? Operador de coliencia nula)
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+
+                };
+
+                return View(viewModel);
         }
-    } 
+    }
 }

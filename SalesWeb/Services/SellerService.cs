@@ -33,7 +33,7 @@ namespace SalesWeb.Services
 
         public Seller FindById(int id)
         {
-            //Includ() eager loading faz um relacionamento entre tabelas
+            // Include(obj => obj.Department) eager loading faz um relacionamento entre tabelas
             return _context.Seller.Include(obj => obj.Department).FirstOrDefault(obj => obj.Id == id);
         }
 
@@ -48,7 +48,8 @@ namespace SalesWeb.Services
 
         public void Update(Seller obj)
         {
-            if(!_context.Seller.Any(x => x.Id == obj.Id))
+            //expressao lambda (x => x.Id == obj.Id)
+            if (!_context.Seller.Any(x => x.Id == obj.Id))
             {
                 throw new NotFoundException("Id not found");
             }
