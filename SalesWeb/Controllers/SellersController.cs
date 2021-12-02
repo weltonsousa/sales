@@ -40,6 +40,13 @@ namespace SalesWeb.Controllers
         [ValidateAntiForgeryToken] // validacao contra ataque crsf
         public IActionResult Create(Seller seller)
         {
+            if (!ModelState.IsValid)
+            {
+                var departaments = _departmentService.FindAll();
+
+                var viweModel = new SellerFormViewModel { Seller = seller, Departments = departaments };
+                return View(viweModel);
+            }
             _sellerService.Insert(seller);
             return RedirectToAction(nameof(Index));
         }
@@ -113,7 +120,15 @@ namespace SalesWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
         {
-           if(id != seller.Id)
+            if (!ModelState.IsValid)
+            {
+                var departaments = _departmentService.FindAll();
+
+                var viweModel = new SellerFormViewModel { Seller = seller, Departments = departaments };
+                return View(viweModel);
+            }
+
+            if (id != seller.Id)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not mismatch"});
             }
