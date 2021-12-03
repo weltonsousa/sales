@@ -22,7 +22,7 @@ namespace SalesWeb.Models
             Name = name;          
         }
 
-        public void AddSaller(Seller seller)
+        public void AddSeller(Seller seller)
         {
             Sellers.Add(seller);
         }
